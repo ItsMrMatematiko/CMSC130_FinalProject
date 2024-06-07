@@ -32,10 +32,10 @@
 #define HERO_HORIZONTAL_POSITION 1    // Horizontal position of hero on screen
 
 /* CONSTANT VALUES FOR TERRAIN Display */
-#define TERRAIN_WIDTH 16
-#define TERRAIN_EMPTY 0
-#define TERRAIN_LOWER_BLOCK 1
-#define TERRAIN_UPPER_BLOCK 2
+#define TERRAIN_WIDTH 16 // Width of Terrain
+#define TERRAIN_EMPTY 0  // Empty Terrain
+#define TERRAIN_LOWER_BLOCK 1 // Lower Block Terrain
+#define TERRAIN_UPPER_BLOCK 2 // Upper Block Terrain
 
 /* CONSTANT VALUES FOR HERO STATES (Current Position and Visibility) */
 #define HERO_POSITION_OFF 0          // Hero is invisible
@@ -131,7 +131,7 @@ void advanceTerrain(char* terrain, byte newTerrain){
 }
 
 bool drawHero(byte position, char* terrainUpper, char* terrainLower, unsigned int score) {
-  bool collide = false;
+  bool collide = false; // Assume the hero is not colliding with anything
   char upperSave = terrainUpper[HERO_HORIZONTAL_POSITION];
   char lowerSave = terrainLower[HERO_HORIZONTAL_POSITION];
   byte upper, lower;
@@ -173,30 +173,33 @@ bool drawHero(byte position, char* terrainUpper, char* terrainLower, unsigned in
       lower = SPRITE_TERRAIN_EMPTY;
       break;
   }
-  if (upper != ' ') {
-    terrainUpper[HERO_HORIZONTAL_POSITION] = upper;
+  if (upper != ' ') { // If the upper terrain is not empty, then the hero is coliding with something
+    terrainUpper[HERO_HORIZONTAL_POSITION] = upper; 
     collide = (upperSave == SPRITE_TERRAIN_EMPTY) ? false : true;
   }
-  if (lower != ' ') {
+  if (lower != ' ') { // If the lower terrain is not empty, then the hero is coliding with something
     terrainLower[HERO_HORIZONTAL_POSITION] = lower;
     collide |= (lowerSave == SPRITE_TERRAIN_EMPTY) ? false : true;
   }
   
+  // Determine the number of digits in the score to reserve appropriate spaces in the display
   byte digits = (score > 9999) ? 5 : (score > 999) ? 4 : (score > 99) ? 3 : (score > 9) ? 2 : 1;
   
   // Draw the scene
   terrainUpper[TERRAIN_WIDTH] = '\0';
   terrainLower[TERRAIN_WIDTH] = '\0';
-  char temp = terrainUpper[16-digits];
+
+  char temp = terrainUpper[16-digits];  // Save the character at the end of the terrain
+
   terrainUpper[16-digits] = '\0';
-  lcd.setCursor(0,0);
-  lcd.print(terrainUpper);
-  terrainUpper[16-digits] = temp;  
-  lcd.setCursor(0,1);
-  lcd.print(terrainLower);
+  lcd.setCursor(0, 0); // Move the display cursor to the first line
+  lcd.print(terrainUpper); // Prints/Displays the upper terrain
+  terrainUpper[16-digits] = temp; 
+  lcd.setCursor(0, 1); // Move cursor to the next line in the display
+  lcd.print(terrainLower); // Prints/Displays the lower terrain
   
-  lcd.setCursor(16 - digits,0);
-  lcd.print(score);
+  lcd.setCursor(16 - digits, 0); // Move the cursor at the end of the first line
+  lcd.print(score); // Print the user's score
 
   terrainUpper[HERO_HORIZONTAL_POSITION] = upperSave;
   terrainLower[HERO_HORIZONTAL_POSITION] = lowerSave;
@@ -221,8 +224,9 @@ void setup(){
   pinMode(PIN_AUTOPLAY, OUTPUT);
   digitalWrite(PIN_AUTOPLAY, HIGH);
   
-  // Digital pin 2 maps to interrupt 0
-  attachInterrupt(0/*PIN_BUTTON*/, buttonPush, FALLING); 
+  // When the button is pushed, the interrupt is triggered and the button push function is called to set the button push flag to true. 
+  // Pin goes from HIGH to LOW
+  attachInterrupt(0 /*PIN_BUTTON*/, buttonPush, FALLING); 
   
   initializeGraphics();
   
